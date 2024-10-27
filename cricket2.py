@@ -43,7 +43,7 @@ class CricketGame:
                 continue  # Skip score update if batter is out
             
             # Add runs to striker's score
-            scores[striker.name] = scores.get(striker.name, 0) + run  # Halve the runs scored
+            scores[striker.name] = scores.get(striker.name, 0) + run 
             total_score += run   # Update total score
             print(f"{striker.name} scored: {run} runs (Total: {total_score}/{wickets})")
             
