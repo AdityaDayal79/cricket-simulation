@@ -162,7 +162,7 @@ class CricketGame:
         )
 
         if self.team2_score < self.team1_score and self.team2_wickets == 10:
-            print(f"{self.team2_name} is all out and did not surpass {self.team1.name}'s score. {self.team1_name} wins by {self.team1_score - self.team2_score} runs!")
+            print(f"{self.team2_name} is all out and did not surpass {self.team1_name}'s score. {self.team1_name} wins by {self.team1_score - self.team2_score} runs!")
         elif self.team2_score <= self.team1_score:
             print(f"{self.team2_name} total score: {self.team2_score}/{self.team2_wickets} runs/wickets")
             if self.team1_score > self.team2_score:
