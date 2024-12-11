@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cricket Game</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f9;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      max-width: 800px;
+      margin: 20px auto;
+      background: #ffffff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    .header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .actions {
+      margin: 20px 0;
+    }
+    button {
+      padding: 10px 20px;
+      margin-right: 10px;
+      border: none;
+      border-radius: 4px;
+      background-color: #007BFF;
+      color: #fff;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    .log {
+      margin-top: 20px;
+      padding: 10px;
+      background-color: #e9ecef;
+      border-radius: 4px;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+    .settings {
+      margin-bottom: 20px;
+    }
+    .settings label {
+      display: block;
+      margin-bottom: 10px;
+    }
+    .settings select {
+      padding: 10px;
+      margin-right: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Cricket Game</h1>
+      <p>India vs Australia</p>
+    </div>
+
+    <div class="settings">
+      <label for="pitchCondition">Select Pitch Condition:</label>
+      <select id="pitchCondition">
+        <option value="normal">Normal</option>
+        <option value="batting">Batting</option>
+        <option value="bowling">Bowling</option>
+      </select>
+    </div>
+
+    <div class="actions">
+      <button id="startGame">Start Game</button>
+      <button id="nextOver" disabled>Next Over</button>
+      <label for="battingAggression">Batting Aggression:</label>
+      <select id="battingAggression">
+        <option value="neutral">Neutral</option>
+        <option value="aggressive">Aggressive</option>
+        <option value="defensive">Defensive</option>
+      </select>
+
+      <label for="fieldSetting">Field Setting:</label>
+      <select id="fieldSetting">
+        <option value="neutral">Neutral</option>
+        <option value="aggressive">Aggressive</option>
+        <option value="defensive">Defensive</option>
+      </select>
+    </div>
+
+    <div id="log" class="log"></div>
+  </div>
+
+  <script>
+    const logElement = document.getElementById('log');
+    const nextOverButton = document.getElementById('nextOver');
+    const battingAggressionSelect = document.getElementById('battingAggression');
+    const fieldSettingSelect = document.getElementById('fieldSetting');
+    const pitchConditionSelect = document.getElementById('pitchCondition');
+    const startGameButton = document.getElementById('startGame');
+
+    let overs = 0;
+    const maxOvers = 20;
+    let currentBattingTeam = 'India';
+
+    const teams = {
+      India: {
+        players: [
+          { name: 'Player1', batting: 80, bowling: 50 },
+          { name: 'Player2', batting: 70, bowling: 60 },
+          { name: 'Player3', batting: 60, bowling: 40 },
+          { name: 'Player4', batting: 50, bowling: 70 },
+          { name: 'Player5', batting: 55, bowling: 65 },
+          { name: 'Player6', batting: 65, bowling: 45 },
+          { name: 'Player7', batting: 40, bowling: 80 },
+          { name: 'Player8', batting: 35, bowling: 85 },
+          { name: 'Player9', batting: 30, bowling: 90 },
+          { name: 'Player10', batting: 20, bowling: 95 },
+          { name: 'Player11', batting: 25, bowling: 85 }
+        ],
+        score: 0,
+        wickets: 0
+      },
+      Australia: {
+        players: [
+          { name: 'PlayerA', batting: 75, bowling: 60 },
+          { name: 'PlayerB', batting: 65, bowling: 55 },
+          { name: 'PlayerC', batting: 70, bowling: 50 },
+          { name: 'PlayerD', batting: 60, bowling: 70 },
+          { name: 'PlayerE', batting: 55, bowling: 75 },
+          { name: 'PlayerF', batting: 80, bowling: 40 },
+          { name: 'PlayerG', batting: 45, bowling: 85 },
+          { name: 'PlayerH', batting: 35, bowling: 90 },
+          { name: 'PlayerI', batting: 30, bowling: 95 },
+          { name: 'PlayerJ', batting: 20, bowling: 85 },
+          { name: 'PlayerK', batting: 25, bowling: 80 }
+        ],
+        score: 0,
+        wickets: 0
+      }
+    };
+
+    function log(message) {
+      logElement.innerHTML += `<p>${message}</p>`;
+      logElement.scrollTop = logElement.scrollHeight;
+    }
+
+    function playOver() {
+  const team = teams[currentBattingTeam];
+  for (let ball = 1; ball <= 6; ball++) {
+    const batter = team.players[team.wickets % 11];
+    const runChance = batter.batting / 100;
+    const wicketChance = (100 - batter.batting) / 100;
+    if (Math.random() < wicketChance * 0.1) {
+      team.wickets++;
+      log(`${batter.name} is out!`);
+      if (team.wickets >= 10) break;
+    } else {
+      const runs = Math.random() < runChance ? Math.floor(Math.random() * 4) + 1 : 0;
+      team.score += runs;
+    }
+  }
+
+  log(`${currentBattingTeam} Total: ${team.score}/${team.wickets} after ${overs + 1} overs.`);
+
+  if (currentBattingTeam === 'Australia' && team.score > teams.India.score) {
+    log('Australia surpasses India\'s score!');
+    endGame();
+    return false;
+  }
+
+  if (team.wickets >= 10 || (currentBattingTeam === 'Australia' && overs >= maxOvers - 1)) {
+    log(`${currentBattingTeam} innings ends with a score of ${team.score}/${team.wickets}.`);
+    return false;
+  }
+
+  return true;
+}
+
+    function endGame() {
+      if (teams.India.score > teams.Australia.score) {
+        log(`India wins by ${teams.India.score - teams.Australia.score} runs!`);
+      } else if (teams.Australia.score > teams.India.score) {
+        log(`Australia wins by ${10 - teams.Australia.wickets} wickets!`);
+      } else {
+        log("The match is a draw!");
+      }
+      nextOverButton.disabled = true;
+    }
+
+    startGameButton.addEventListener('click', () => {
+      log(`Game Started with ${pitchConditionSelect.value} pitch condition! India is batting first.`);
+      nextOverButton.disabled = false;
+      pitchConditionSelect.disabled = true;
+      overs = 0;
+      currentBattingTeam = 'India';
+    });
+
+    nextOverButton.addEventListener('click', () => {
+      if (overs < maxOvers) {
+        const continueGame = playOver();
+        overs++;
+
+        if (!continueGame || (overs === maxOvers && currentBattingTeam === 'India')) {
+          if (currentBattingTeam === 'India') {
+            log('Indian innings ended. Australia is now batting.');
+            currentBattingTeam = 'Australia';
+            overs = 0;
+          } else {
+            log('Game Over!');
+            endGame();
+          }
+        }
+      }
+    });
+  </script>
+</body>
+</html>
+
+
+
